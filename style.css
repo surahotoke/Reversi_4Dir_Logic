@@ -1,0 +1,37 @@
+.reversi {
+  background: green;
+  width: fit-content;
+  padding: 6px;
+  border: solid 4px;
+  border-radius: 2%;
+  display: grid;
+  grid-template-columns: repeat(8, 3rem);
+  gap: 8px;
+}
+.reversi > div {
+  aspect-ratio: 1;
+  border-radius: 6%;
+  /* 文字サイズに合わせたいのでborderではなくoutlineで調整 */
+  outline: solid 2px;
+  /* 置ける表示のため */
+  overflow: hidden;
+  /* 色付け */
+  background: radial-gradient(closest-side, var(--color) 75%, darkgreen 75%);
+  /* 置けるマスの設定 */
+  &::before,
+  &::after {
+    cursor: pointer;
+    /* 横と縦のどちらかでいいので1つしか表示できなくする */
+    white-space: nowrap;
+  }
+  /* 黒の置けるマス */
+  &::before {
+    background-color: red;
+    content: var(--black);
+  }
+  /* 白の置けるマス */
+  &::after {
+    background-color: blue;
+    content: var(--white);
+  }
+}

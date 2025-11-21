@@ -1,0 +1,229 @@
+/* 取れるマス数の範囲 */
+@counter-style valid {
+  system: cyclic;
+  symbols: "置ける";
+  range: 1 6;
+  fallback: invalid;
+}
+/* 取れないマス数 */
+@counter-style invalid {
+  system: cyclic;
+  symbols: "";
+}
+.reversi {
+  /* overflowを明示してview-timelineの基準にする */
+  overflow: hidden;
+}
+.reversi > div {
+  /* アクションと状態の設定 */
+  animation: steps(3, jump-none) 1s infinite, linear reverse, linear reverse;
+  animation-name: touch, w, h;
+  animation-timeline: auto, view(x), view();
+  animation-range: contain;
+  /* アクションは押していなければ動かない */
+  animation-play-state: paused;
+  /* 初期配置 */
+  --init: calc(var(--mode) + if(
+    style(
+      ((--w: 3) and (--h: 3)) or
+      ((--w: 4) and (--h: 4))
+    ): 1;
+    style(
+      ((--w: 3) and (--h: 4)) or
+      ((--w: 4) and (--h: 3))
+    ): 2;
+    else: 0;
+  ));
+  /* 番号を色に直す */
+  --color: if(
+    style(--init: 1): black;
+    style(--init: 2): white;
+    else: darkgreen;
+  );
+  /* マスの斜め＼座標 */
+  --p: calc(var(--w) - var(--h) + 5);
+  /* マスの斜め／座標 */
+  --n: calc(var(--w) + var(--h) - 2);
+  /* 黒判定横方向識別用 */
+  --wb: if(
+    style(--w: 0): w0b;
+    style(--w: 1): w1b;
+    style(--w: 2): w2b;
+    style(--w: 3): w3b;
+    style(--w: 4): w4b;
+    style(--w: 5): w5b;
+    style(--w: 6): w6b;
+    else: w7b;
+  );
+  /* 白判定横方向識別用 */
+  --ww: if(
+    style(--w: 0): w0w;
+    style(--w: 1): w1w;
+    style(--w: 2): w2w;
+    style(--w: 3): w3w;
+    style(--w: 4): w4w;
+    style(--w: 5): w5w;
+    style(--w: 6): w6w;
+    else: w7w;
+  );
+  /* 黒判定縦方向識別用 */
+  --hb: if(
+    style(--h: 0): h0b;
+    style(--h: 1): h1b;
+    style(--h: 2): h2b;
+    style(--h: 3): h3b;
+    style(--h: 4): h4b;
+    style(--h: 5): h5b;
+    style(--h: 6): h6b;
+    else: h7b;
+  );
+  /* 白判定縦方向識別用 */
+  --hw: if(
+    style(--h: 0): h0w;
+    style(--h: 1): h1w;
+    style(--h: 2): h2w;
+    style(--h: 3): h3w;
+    style(--h: 4): h4w;
+    style(--h: 5): h5w;
+    style(--h: 6): h6w;
+    else: h7w;
+  );
+  /* 黒判定斜め＼方向識別用 */
+  --pb: if(
+    style(--p: 0): p0b;
+    style(--p: 1): p1b;
+    style(--p: 2): p2b;
+    style(--p: 3): p3b;
+    style(--p: 4): p4b;
+    style(--p: 5): p5b;
+    style(--p: 6): p6b;
+    style(--p: 7): p7b;
+    style(--p: 8): p8b;
+    style(--p: 9): p9b;
+    style(--p: 10): p10b;
+    else: none;
+  );
+  /* 白判定斜め＼方向識別用 */
+  --pw: if(
+    style(--p: 0): p0w;
+    style(--p: 1): p1w;
+    style(--p: 2): p2w;
+    style(--p: 3): p3w;
+    style(--p: 4): p4w;
+    style(--p: 5): p5w;
+    style(--p: 6): p6w;
+    style(--p: 7): p7w;
+    style(--p: 8): p8w;
+    style(--p: 9): p9w;
+    style(--p: 10): p10w;
+    else: none;
+  );
+  /* 黒判定斜め／方向識別用 */
+  --nb: if(
+    style(--n: 0): n0b;
+    style(--n: 1): n1b;
+    style(--n: 2): n2b;
+    style(--n: 3): n3b;
+    style(--n: 4): n4b;
+    style(--n: 5): n5b;
+    style(--n: 6): n6b;
+    style(--n: 7): n7b;
+    style(--n: 8): n8b;
+    style(--n: 9): n9b;
+    style(--n: 10): n10b;
+    else: none;
+  );
+  /* 白判定斜め／方向識別用 */
+  --nw: if(
+    style(--n: 0): n0w;
+    style(--n: 1): n1w;
+    style(--n: 2): n2w;
+    style(--n: 3): n3w;
+    style(--n: 4): n4w;
+    style(--n: 5): n5w;
+    style(--n: 6): n6w;
+    style(--n: 7): n7w;
+    style(--n: 8): n8w;
+    style(--n: 9): n9w;
+    style(--n: 10): n10w;
+    else: none;
+  );
+  /* 判定用カウンター（取れるマス数）をリセット */
+  --counter-reset: if(
+    style(--color: black): var(--wb) -7 var(--hb) -7 var(--pb) -7 var(--nb) -7;
+    style(--color: white): var(--ww) -7 var(--hw) -7 var(--pw) -7 var(--nw) -7;
+    else: none;
+  );
+  counter-reset: var(--counter-reset);
+  /* 判定用カウンター（取れるマス数）を進める、緑なら判定にかかる */
+  --counter-increment: if(
+    style(--color: black): var(--ww) var(--hw) var(--pw) var(--nw) ;
+    style(--color: white): var(--wb) var(--hb) var(--pb) var(--nb) ;
+    else: var(--wb) 7 var(--ww) 7 var(--hb) 7 var(--hw) 7 var(--pb) 7 var(--pw) 7 var(--nb) 7 var(--nw) 7;
+  );
+  counter-increment: var(--counter-increment);
+  /* 緑の場合に黒が置ける状態にあるか */
+  --black: if(
+    style(--color: darkgreen): counter(var(--wb), valid) counter(var(--hb), valid) counter(var(--pb), valid) counter(var(--nb), valid);
+    else: none;
+  );
+  /* 緑の場合に白が置ける状態にあるか */
+  --white: if(
+    style(--color: darkgreen): counter(var(--ww), valid) counter(var(--hw), valid) counter(var(--pw), valid) counter(var(--nw), valid);
+    else: none;
+  );
+  /* マス更新 */
+  &:active {
+    animation-play-state: running;
+  }
+}
+/* 緑、黒、白 */
+@keyframes touch {
+  to {
+    --mode: 2;
+  }
+}
+/* マスの横座標 */
+@keyframes w {
+  to {
+    --w: 7;
+  }
+}
+/* マスの縦座標 */
+@keyframes h {
+  to {
+    --h: 7;
+  }
+}
+/* アニメーションで変えれるようにする */
+@property --mode {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@property --w {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@property --h {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+/* ここで設定しておかないとif文でcalcが解釈計算されない */
+@property --init {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@property --p {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@property --n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
