@@ -23,7 +23,7 @@
   /* アクションは押していなければ動かない */
   animation-play-state: paused;
   /* 初期配置 */
-  --init: calc(var(--mode) + if(
+  --init: mod(var(--mode) + if(
     style(
       ((--w: 3) and (--h: 3)) or
       ((--w: 4) and (--h: 4))
@@ -33,7 +33,7 @@
       ((--w: 4) and (--h: 3))
     ): 2;
     else: 0;
-  ));
+  ), 3);
   /* 番号を色に直す */
   --color: if(
     style(--init: 1): black;
