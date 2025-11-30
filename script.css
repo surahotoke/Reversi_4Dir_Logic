@@ -157,8 +157,8 @@
   counter-reset: var(--counter-reset);
   /* 判定用カウンター（取れるマス数）を進める、緑なら判定にかかる */
   --counter-increment: if(
-    style(--color: black): var(--ww) var(--hw) var(--pw) var(--nw) ;
-    style(--color: white): var(--wb) var(--hb) var(--pb) var(--nb) ;
+    style(--color: black): var(--ww) var(--hw) var(--pw) var(--nw);
+    style(--color: white): var(--wb) var(--hb) var(--pb) var(--nb);
     else: var(--wb) 7 var(--ww) 7 var(--hb) 7 var(--hw) 7 var(--pb) 7 var(--pw) 7 var(--nb) 7 var(--nw) 7;
   );
   counter-increment: var(--counter-increment);
